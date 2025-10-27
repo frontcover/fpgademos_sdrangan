@@ -37,22 +37,34 @@ to see the results.
 #define MAX_SIZE 1024  // Array size to test
 #define DATA_FLOAT 1   // Data type:  1= float, 0=int
 ~~~
-which are the default parameters.  These parameters will perform no optimization.
+which are the default parameters.  Using this configuration
+is equivalent to setting the compiler directives as:
+~~~C
+    // Multiplication loop with optional pipelining / unrolling
+    mult_loop:  for (int i = 0; i < n; i++) {
+#pragma HLS pipeline off 
+        c_buf[i] = a_buf[i] * b_buf[i];
+    }
+~~~
+This setting disables pipelining, meaning that all the instructions in each iteration must complete
+before the next iteration begins.
 * In the `Flow` panel (left sidebar), select `C Synthesis->Run`.
-The synthesis will map the C design to logic elements and build a state machine for the overall execution flow.
 
+The synthesis will map the C design to logic elements and build a state machine for the overall execution flow.
 The synthesis for a simple design like this takes under a minute and will generate a number of files.
 
 ## Analyzing the performance
-The synthesis provides an estimate of how long the loop takes to execute in hardware.  In general, the number of cycles to execute a loop with `n` iterations (sometimes called *trip count*) is given by:
+The synthesis provides an estimate of how long the loop takes to execute in hardware.  When there is no pipelining, the total
+number of cycles to complete a loop is simply:
 ~~~
-  num cycles = L0 + n*II
+num cycles = L0*n
 ~~~
-where `L0` is the *iteration latency*, which is the number of cycles for the first iteration to complete, and `II` is the *iteration interval*, which is the number of cycles for each additional iteration.  The total time in seconds is
+where `L0` is the *iteration latency* and `n` is the number of iterations.  
+Thus, the total time in seconds is
 ~~~
-   total latency = (num cycles)*Tclk
+T = (num cycles)*Tclk = (num cycles)/fclk
 ~~~
-where `Tclk` is the clock period.   For this design, I have somewhat aggressively set `fclk = 1/Tclk=300 Mhz`.
+where `Tclk` is the clock period and `fclk=1/Tclk` is the clock frequency.  In this demo, we have set the clock frequency at `fclk=300 MHz`.
 
 We can find out the parameters for our initial synthesis:
 
@@ -61,11 +73,13 @@ We can find out the parameters for our initial synthesis:
 * In the table, there will be one entry for each loop.  The data for multiplication loop is `vec_mult_Pipeline_mult_loop`.
 
 You will likely see parameters:
-   * `Interval = 1` meaning `II=1` which is the optimal.  This means that all the steps in the interval could be completed in one clock cycle.
-   * `Iteration latency = 10`, referring to the initial latency.
+   * `Pipelined = no` meaning no pipelining was enabled
+   * `Iteration latency = 10`, referring to the latency for each iteration, `L0`.
 
-With the above clock rate and trip count of `n=1024`, the total latency was `1034` clock cycles or about `3.44 us`.  
-These metrics help us understand how efficiently the loop maps to hardware — whether operations are serialized or overlapped, and how well the design meets timing constraints.
+With the above clock rate and trip count of `n=1024`, the total latency was `10240` clock cycles or about `34.1 us`.
+The reason that the number of clock cycles is so large even for multiplying two numbers is that the floating point multiplications take many clock cycles.
+We'll discuss the details of floating point multiplication later, but one can imagine there are many steps including the multiplication of the mantissa and handling of the exponent.
+Overall, these metrics help us understand how efficiently the loop maps to hardware — whether operations are serialized or overlapped, and how well the design meets timing constraints.
 ---
 
 Go to [Optimizing the loop](./optim.md).

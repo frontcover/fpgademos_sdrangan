@@ -39,6 +39,8 @@ void poly_vec(
     #pragma HLS unroll factor=UNROLL_FACTOR
     #elif PIPELINE_EN
     #pragma HLS pipeline II=1
+    #else
+    #pragma HLS pipeline off 
     #endif
         float x0 = x_buf[i];
         float x1 = x0 * x0;

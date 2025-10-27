@@ -43,6 +43,8 @@ void vec_mult(data_t *a, data_t *b, data_t *c, int n) {
 #pragma HLS unroll factor=UNROLL_FACTOR
 #elif PIPELINE_EN
 #pragma HLS pipeline II=1
+#else
+#pragma HLS pipeline off 
 #endif
         c_buf[i] = a_buf[i] * b_buf[i];
     }
