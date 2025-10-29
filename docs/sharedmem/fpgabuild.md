@@ -1,11 +1,44 @@
 ---
-title: Building the FPGA bitstream and PYNQ Overlay
-parent: Getting started
+title: Building the FPGA project
+parent: Shared Memory PS Interface
 nav_order: 3
 has_children: false
 ---
 
+# Creating the Vivado project
+
+## Creating the project with the MPSOC
+We first create an Vivado project with the MPSOC:
+
+* Launch Vivado (see the [installation instructions]({{ site.baseurl }}/docs/installation.md#launching-vivado)):
+* Select the menu option `File->Project->New...`.  
+   * For the project name, use `vmult_vivado`.  
+   * In location, use the directory `fpgademos/vec_mult`.  The Vivado project will then be stored in `fpgademos/vec_mult/vmult_vivado`.
+* Select `RTL project`.  
+   * Leave `Do not specify sources at this time` checked.
+* For `Default part`, select the `Boards` tab and then select `Zynq UltraScale+ RFSoC 4x2 Development Board`.
+* The Vivado window should now open with a blank project.
+
+## Add and configure the Zynq Processor
+* In the `Block Design` window select the `Add IP (+)` button.  Add the `Zynq UltraScale+ MPSoC`.  This will add the MPSoC to the design.
+* Add the Slave AXI on the PS.  Recall that this is the interface that will be used by the IP to access the DDR.
+   * Double click the `Zynq UltraScale+ MPSoC` that you just added.
+   * On the `Page Navigator` panel (left) select `Switch to Advanced Mode`. 
+   * Select`PS-PL connection->Slave Interface->AXI HP0 FPD`.  The `FPD` stands for the *full power domain* which includes the ARM core, DDR controller, and high performance AXI ports.
+   * Set the bit width to 32 since we will be using floating points.  
+* Run the `Connection automation`
+* Connect the `pclk` to the `maxihpm0_fpd_aclk`, `maxihpm1_fpd_aclk`, and `saxihp0_fpd_aclk` ports.  
+
+## Adding the Vitis IP to Vivado
+* Go to `Tools->Settings->Project Settings->IP->Repository`.  Select the `+` sign in `IP Repositories`.  Navigate to the directory with the adder component.  In our case, this was at:  `fpgademos/vector_mult/vmult_vitis/vmult_hls/vec_mult/hls/impl/ip`.  
+* Select the `Add IP` button (`+`) again.  Add this IP.  Now the `Vec_Mult` block should show up as an option.  If it doesn't it is possible that you synthesized for the wrong FPGA part number.  
+* You should see an Vitis IP block with ports `s_axi_control`, `interrupt`, `m_axi_gmem` and some clocks.  Select the `run block automation`.
+* Manually connect the `m_axi_gmem` on the Vitis IP to the `S_AXI_HP0_FPD` which connects the master AXI on the IP to the DDR controller on the PS.  
+* Connect the `interrupt` on the Vitis IP to the `pl_ps_irq0` so that the PS can see the Vitis IP interrupt.
+* Select the `vect_mult` block.  In the `Block Properties` panel, select the `General` tab, and rename the block to `vect_mult`.  This is the name that we will use when calling the function from `PYNQ`.
+
 ## Creating the FPGA Bitstream in Vivado
+Follow the similar steps in Scalar adder demo 
 
 We are now ready to create the bitstream to program the FPGA with the design.
 
