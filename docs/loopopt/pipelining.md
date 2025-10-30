@@ -5,7 +5,7 @@ nav_order: 3
 has_children: false
 ---
 
-# Pipelining and Unrolling
+# Loop Pipelining
 
 In the previous section, we synthesized a simple loop without any optimization. Now we’ll explore two powerful techniques that can dramatically improve performance: **loop pipelining** and **loop unrolling**.
 
