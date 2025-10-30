@@ -37,7 +37,7 @@ if [ -z "$tclfile" ]; then
 fi
 
 # Derive base name
-base=$(basename "$bitfile" | sed 's/_wrapper\.bit$//;s/\.bit$//')
+base=$(basename "$project_dir")
 
 # Copy and rename
 cp "$bitfile" "$project_dir/overlay/${base}.bit"
