@@ -23,9 +23,12 @@ Prior to doing this demo, you will need to select an Ubuntu machine as the host 
 
 Then select a directory on the host computer and clone the repository to that directory. 
 
----
+## Next Steps
 
-Go to [Creating the Vivado Project](./vivado_build.md)
+If you want to build the IP, add it to the Vivado project, and create the overlay, start from the begining with [building the IP in Vitis HLS](./vitis_ip.md).
+
+Alternatively, the github repo already includes a pre-built overlay file.  So, you can just skip to [accessing the Vitis IP from PYNQ](./pynq.md).
+
 
 
  

@@ -1,7 +1,7 @@
 ---
 title: Building the FPGA bitstream and PYNQ Overlay
 parent: Getting started
-nav_order: 4
+nav_order: 3
 has_children: false
 ---
 # Creating the FPGA Bitstream and PYNQ Overlay
