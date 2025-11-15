@@ -12,6 +12,7 @@ This demo is the *hello world* of the FPGA workflow using Vitis, Vivado, and PYN
 By completing this demo, you will learn how to:
 
 * Design and synthesize a simple **Vitis IP** that performs a basic mathematical operation using an **AXI-Lite interface**
+* Simulate the synthesized Vitis IP and view the **timing diagrams** in a VCD
 * Create a minimal **Vivado project** that integrates the IP
 * Synthesize the design to generate a **bitstream**
 * Build a **PYNQ overlay** that loads the bitstream onto the FPGA board

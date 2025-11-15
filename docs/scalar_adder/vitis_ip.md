@@ -17,7 +17,7 @@ Then, get the FPGA part number for that processing system.
 
 ## Creating the Vitis HLS Project
 
-* Launch Vitis (see the [installation instructions](../sw_installation/installation.md))
+* [Launch Vitis](../sw_installation/installation.md)
 * Select **Open Workspace**.  Go to the directory `fpgademos\scalar_adder`.  This is where we will put the workspace.  `Vitis_HLS` will reopen.
 * Select **Create component->Create empty HLS component**.  You will walk through the following six steps:
     * For **Name and location**, select component name as `scalar_add` and the location as `fpgademos\scalar_adder\scalar_add_vitis`
@@ -64,8 +64,11 @@ Alternatively, you could have selected **New Source File** and created the file 
   This step converts your C/C++ function into synthesizable RTL (Verilog/VHDL), targeting the specified FPGA part.
 * Next in the **FLOW** panel, select **Package → Run**.  
   This wraps the synthesized RTL into a reusable IP block, complete with metadata and interface definitions.
-* The packaging will have created a directory of files containing the *IP* for the adder.  It will be located in `scalar_adder_vitis/scalar_add/add/hls/impl/ip`.
-
+* The packaging will have created a directory of files containing the *IP* for the adder.  It will be located in 
+~~~bash
+  scalar_adder_vitis/scalar_add/add/hls/impl/ip
+~~~
 * Note that we do not need to run the **Implementation** step — this is for creating standalone bitstreams, not ones that will be integrated into a larger FPGA project.
+
 ---
 Go to [Adding the Vitis IP](./add_ip.md)
