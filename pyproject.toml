@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "xilinxutils"
+description = "Xilinx helper utilities"
+readme = {file = "readme.md", content-type = "text/markdown"}
+requires-python = ">=3.9"
+license = {text = "BSD-3-Clause"}
+authors = [
+  {name = "Sundeep Rangan", email = "srangan@nyu.edu"},
+]
+keywords = ["xilinx", "fpga", "vivado", "vitis", "automation", "utilities"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: BSD License",
+  "Operating System :: OS Independent",
+]
+dependencies = [
+  "requests"
+]
+dynamic = ["version"]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["xilinxutils*"]
+
+[tool.setuptools_scm]
+fallback_version = "0.1.0"

@@ -6,9 +6,9 @@
 void vec_mult(data_t *a, data_t *b, data_t *c, int n) {
 
     // HLS pragmas for optimization
-#pragma HLS INTERFACE m_axi port=a offset=slave bundle=gmem
-#pragma HLS INTERFACE m_axi port=b offset=slave bundle=gmem
-#pragma HLS INTERFACE m_axi port=c offset=slave bundle=gmem
+#pragma HLS INTERFACE m_axi port=a depth=MAX_SIZE offset=slave bundle=gmem
+#pragma HLS INTERFACE m_axi port=b depth=MAX_SIZE offset=slave bundle=gmem
+#pragma HLS INTERFACE m_axi port=c depth=MAX_SIZE offset=slave bundle=gmem
 #pragma HLS INTERFACE s_axilite port=a bundle=control
 #pragma HLS INTERFACE s_axilite port=b bundle=control
 #pragma HLS INTERFACE s_axilite port=c bundle=control
