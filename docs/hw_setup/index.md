@@ -1,6 +1,6 @@
 ---
 title: Hardware Set-Up
-parent: FPGA Demos
+parent: Hardware Design
 nav_order: 2
 has_children: true
 ---

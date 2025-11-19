@@ -1,6 +1,6 @@
 ---
 title: Loop optimization
-parent: FPGA Demos
+parent: Hardware Design
 nav_order: 4
 has_children: true
 ---

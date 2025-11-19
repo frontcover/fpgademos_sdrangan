@@ -1,6 +1,6 @@
 ---
 title: Shared Memory PS Interface
-parent: FPGA Demos
+parent: Hardware Design
 nav_order: 5
 has_children: true
 ---

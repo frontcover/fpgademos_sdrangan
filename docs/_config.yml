@@ -1,4 +1,4 @@
-title: "FPGA Demos"
+title: "Hardware Design"
 description: "Modular, reproducible hardware/software co-design labs"
 remote_theme: just-the-docs/just-the-docs
 baseurl: "/hwdesign" # Only needed if using a project page

@@ -8,7 +8,7 @@ has_children: false
 # Cloning the GitHub Repository
 
 ## Cloning the repoistory for a host PC
-All the class material is in the [FPGA demos GitHub repository](https://github.com/sdrangan/hwdesign).
+All the class material is in the [GitHub repository](https://github.com/sdrangan/hwdesign).
 
 You can clone the repository to your host PC with the command:
 ~~~bash

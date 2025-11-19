@@ -1,18 +1,21 @@
 ---
-title: FPGA Demos
+title: Hardware Design
 nav_order: 1
 has_children: true
 ---
 
-# FPGA Demos
+# Introduction to Hardware Design
 
-The long-term goal of this repository is to create a series of modular FPGA demos designed to teach hardware/software co-design using Vitis, Vivado, PYNQ, and Python-based simulation.  In going through these demos, you will learn:
+This repository is for a potential class on introduction to hardware design tailored for students with no prior hardware experience.  Through practical labs, students will learn to:
 
 * Identify computationally demanding tasks suitable for hardware acceleration.
 * Design efficient hardware and software accelerators using state-of-the-art Vitis HLS 
 * Simulate and evaluate accelerators with in Vivado and python
 * Integrate accelerators in processor-based systems
 * Deploy projects onto FPGA boards with PYNQ-based python interfaces
+
+If you are an NYU Tandon student, this class may be offered initially in Spring 2026.
+
 
 <img src="./images/pynq-z2.png" alt="Pynq-Z2 board" width="400"/>
 
@@ -28,13 +31,12 @@ engineers for any discipline that hardware can help.
 
 ## Target Platforms and Hardware Required
 
-Right now, the demos will focus on two FPGA platforms:
+You can perform most of the class with free versions of software only.  However, we also provide
+instructions on deploying the hardware on one of two  FPGA platforms:
 
-* [**PYNQ-Z2**](https://www.amd.com/en/corporate/university-program/aup-boards/pynq-z2.html):  A low-cost, easy-to-use board ideal for teaching.  We are considering using this platform as an introductory hardware design class at NYU.
+* [**PYNQ-Z2**](https://www.amd.com/en/corporate/university-program/aup-boards/pynq-z2.html):  A low-cost, easy-to-use board ideal for teaching.  We are considering using this platform for the introductory hardware design class at NYU.
 * [**RFSoC 4x2**](https://www.amd.com/en/corporate/university-program/aup-boards/rfsoc4x2.html):  A more powerful, but still relatively low-cost, board for specifically design wireless communications with high-speeds ADCs.
 
-The details for most of the demos are only in one of the two platforms.  However, most of the demos can be adapted either of the boards, or other FPGA boards.  Also, even if you do not have a board,
-you will still be able to do the design and simulation of the hardware.
 
 ## People
 

@@ -56,7 +56,7 @@ package requirements:
     xilinxutils.check_install()
 ~~~
 This command should return something like:
-~~~python
+~~~pythons
     {'package': 'xilinxutils', 
     'version': '0.1.1.dev83+ge97966f1d.d20251117', 
     'status': 'OK'}

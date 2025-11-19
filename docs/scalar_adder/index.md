@@ -1,6 +1,6 @@
 ---
 title: Getting started
-parent: FPGA Demos
+parent: Hardware Design
 nav_order: 3
 has_children: true
 ---
