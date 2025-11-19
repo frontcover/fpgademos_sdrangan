@@ -16,7 +16,7 @@ parsing of system reports or timing outputs.  You can install the package in a v
 *  First, create a virtual environment.  The command below will
 create an environment named `env`,
 but any other environment name can be used.  I usually perform this command
-in the directory just outside `fpgademos`.
+in the directory just outside `hwdesign`.
 ~~~bash
 python -m venv env
 ~~~
@@ -90,7 +90,7 @@ Delete this line since it is only needed for Windows.
 
 * You may also find a line like:
 ~~~
--e git+https://github.com/sdrangan/fpgademos.git@...#egg=xilinxutils
+-e git+https://github.com/sdrangan/hwdesign.git@...#egg=xilinxutils
 ~~~
 The particular github address may be different and there may be a long version number.
 This line installs the `xilinxutils` package directly from github.  But, we do not need it.

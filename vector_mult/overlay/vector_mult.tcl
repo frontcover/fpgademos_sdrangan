@@ -1,5 +1,5 @@
 namespace eval ::optrace {
-  variable script "/home/wirelesslab914/sundeep/fpgademos/vector_mult/vmult_vivado/vmult_vivado.runs/impl_1/design_1_wrapper.tcl"
+  variable script "/home/wirelesslab914/sundeep/hwdesign/vector_mult/vmult_vivado/vmult_vivado.runs/impl_1/design_1_wrapper.tcl"
   variable category "vivado_impl"
 }
 
@@ -112,7 +112,7 @@ set rc [catch {
   set_param power.enableLutRouteBelPower 1
   set_param runs.launchOptions { -jobs 6  }
   open_checkpoint design_1_wrapper_routed.dcp
-  set_property webtalk.parent_dir /home/wirelesslab914/sundeep/fpgademos/vector_mult/vmult_vivado/vmult_vivado.cache/wt [current_project]
+  set_property webtalk.parent_dir /home/wirelesslab914/sundeep/hwdesign/vector_mult/vmult_vivado/vmult_vivado.cache/wt [current_project]
 set_property TOP design_1_wrapper [current_fileset]
 OPTRACE "read constraints: write_bitstream" START { }
 OPTRACE "read constraints: write_bitstream" END { }

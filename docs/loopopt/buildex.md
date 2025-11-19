@@ -6,7 +6,7 @@ has_children: false
 ---
 
 ## A Simple Example:  Multiplying Two Vectors
-To illustrate the concepts, we consider the implementation of a simple multiplcation of two vectors.   The code can be found in `fpgademos/vector_mult/vmult_vitis`.  The main program is in `src/vmult.cpp` which contains the follwing code (along with a number of `#pragma` statements that we will describe later).
+To illustrate the concepts, we consider the implementation of a simple multiplcation of two vectors.   The code can be found in `hwdesign/vector_mult/vmult_vitis`.  The main program is in `src/vmult.cpp` which contains the follwing code (along with a number of `#pragma` statements that we will describe later).
 ~~~C
 void vec_mult(data_t *a, data_t *b, data_t *c, int n) {
 
@@ -44,7 +44,7 @@ We address the data transfer into and out of IP cores in a later unit.  The data
 
 ## Building and Simulating the the Vector Multiplier
 
-The design files for this Vitis project are in the repo `fpgademos/vector_mult/vmult_vitis`.  Follow the instructions to [build the Vitis HLS project]({{ site.baseurl }}/docs/vitis_build.md) to build the project for these design files.  
+The design files for this Vitis project are in the repo `hwdesign/vector_mult/vmult_vitis`.  Follow the instructions to [build the Vitis HLS project]({{ site.baseurl }}/docs/vitis_build.md) to build the project for these design files.  
 The top of the file `include/vmult.h` provides a number of parameters that we can vary to see the effect of the optimization:
 ~~~C
 #define PIPELINE_EN 0  // Enables pipelining

@@ -8,11 +8,11 @@ has_children: false
 # Cloning the GitHub Repository
 
 ## Cloning the repoistory for a host PC
-All the class material is in the [FPGA demos GitHub repository](https://github.com/sdrangan/fpgademos).
+All the class material is in the [FPGA demos GitHub repository](https://github.com/sdrangan/hwdesign).
 
 You can clone the repository to your host PC with the command:
 ~~~bash
-    git clone https://github.com/sdrangan/fpgademos.git
+    git clone https://github.com/sdrangan/hwdesign.git
 ~~~
 Since I am frequently updating material, you may need to reload the repository.  If you want to pull it and override local changes:
 ~~~bash

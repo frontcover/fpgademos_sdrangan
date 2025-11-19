@@ -7,10 +7,10 @@ has_children: false
 
 # Creating the Vitis IP
 
-In the previous unit on [loop optimization]({site.root}/fpgademos/loopopt), we built and optimized a simple vector multiplier IP core.  Before starting, we need to select a set of parameters and package the IP and run the Implementation.   You can build the IP manually with the Vitis GUI or via an included script.
+In the previous unit on [loop optimization]({site.root}/hwdesign/loopopt), we built and optimized a simple vector multiplier IP core.  Before starting, we need to select a set of parameters and package the IP and run the Implementation.   You can build the IP manually with the Vitis GUI or via an included script.
 
 ## Building the Vitis IP with a script
-* Navigate to `fpgademos/vector_mult/vmult_vitis`.
+* Navigate to `hwdesign/vector_mult/vmult_vitis`.
 * The script is located in `scripts/build_ip.tcl`.  If you want you can change the unroll factor for the IP you want to build by modifying the line:
 ~~~tcl
     # Set the desired unroll factor
@@ -23,7 +23,7 @@ By default, it is set to `4`.
 vitis-run --mode hls --tcl scripts/build_ip.tcl
 ~~~
 * Running the script will take about 1 to 2 minutes.
-* The IP should be located in a directory such as `/fpgademos/vector_mult/vmult_vitis/sol_uf4/` depending on what unroll factor you used.
+* The IP should be located in a directory such as `/hwdesign/vector_mult/vmult_vitis/sol_uf4/` depending on what unroll factor you used.
 
 
 ## Building the IP with the Vitis GUI
@@ -44,7 +44,7 @@ This will use loop unrolling.  But, you can use any parameters you like.
    * Run the `C synthesis`
 * Next in the `FLOW` panel, run the `Package` step.  
     * Note that you do not need to run `Implementation` since we are not creating a standalone bitstream for the IP -- just a IP that can be imported into Vivado.
-* The IP should be located in `/fpgademos/vector_mult/vmult_vitis/vmult_hls/`
+* The IP should be located in `/hwdesign/vector_mult/vmult_vitis/vmult_hls/`
 
 ---
 Go to [Understanding AXI and Memory Transfers](./axi.md).

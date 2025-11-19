@@ -14,7 +14,7 @@ In this note, we describe how we organize Vitis projects and show how to build t
 
 ## Directory structure
 
-Most Vitis projects in the repository follow the directory structure that we use for the vector multiplier.  For the vector multiplier project, the overall directory is `/fpgademos/vector_mult` and the Vitis files are in a sub-folder, `vmult_vitis`.  The Vitis folder has an internal structure:
+Most Vitis projects in the repository follow the directory structure that we use for the vector multiplier.  For the vector multiplier project, the overall directory is `/hwdesign/vector_mult` and the Vitis files are in a sub-folder, `vmult_vitis`.  The Vitis folder has an internal structure:
 ~~~
    vmult_vitis
    ├── include
@@ -41,7 +41,7 @@ For the manual method, the steps for the example `vmult_vitis` are as follows.  
 * Launch Vitis HLS (see the [installation instructions]({{ site.baseurl }}/docs/installation.md#launching-vitis))
 * Go to `File → New Component → HLS`.  You will set a sequence of items:
    * For `Component name` select `vmult_hls`
-   * For `Component location` select `fpgademos/vector_mult/vmult_vitis`
+   * For `Component location` select `hwdesign/vector_mult/vmult_vitis`
    * For `Configuration File` select `Empty File`
    * For `Source Files` set:
        * Top Function: `vec_mult`
@@ -85,7 +85,7 @@ We place the file right in `vmult_vitis` directory to avoid to many indirect ref
 - Navigate to the project folder
     - Use the `cd` command to change into the folder where your script lives:
     ~~~
-    cd fpgademos/vector_mult/vmult_vitis
+    cd hwdesign/vector_mult/vmult_vitis
     ~~~
 - Run the script
 -    Use the source command to execute the script:
@@ -102,7 +102,7 @@ We place the file right in `vmult_vitis` directory to avoid to many indirect ref
 * Open a terminal (e.g., PowerShell, Command Prompt, or bash)
 * Navigate to the project folder
 ~~~bash
-    cd fpgademos/vector_mult/vmult_vitis
+    cd hwdesign/vector_mult/vmult_vitis
 ~~~
 * Run the script using vitis_hls
 ~~~bash

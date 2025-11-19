@@ -52,7 +52,7 @@ You **cannot use the latest version** of Vivado/Vitis. You must install a versio
 ## Clone the repository
 When everything is installed, `cd` to the directory where you want to run the demos and clone the repository
 ~~~bash
-    git clone https://github.com/sdrangan/fpgademos.git
+    git clone https://github.com/sdrangan/hwdesign.git
 ~~~
 
 

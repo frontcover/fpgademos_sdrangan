@@ -1,5 +1,5 @@
 namespace eval ::optrace {
-  variable script "C:/Users/sdran/Documents/repos/fpgademos/scalar_adder/scalar_add_pynqz2/scalar_add_pynqz2.runs/impl_1/design_1_wrapper.tcl"
+  variable script "C:/Users/sdran/Documents/repos/hwdesign/scalar_adder/scalar_add_pynqz2/scalar_add_pynqz2.runs/impl_1/design_1_wrapper.tcl"
   variable category "vivado_impl"
 }
 
@@ -109,7 +109,7 @@ set rc [catch {
   set_param general.usePosixSpawnForFork 1
   set_param runs.launchOptions { -jobs 8  }
   open_checkpoint design_1_wrapper_routed.dcp
-  set_property webtalk.parent_dir C:/Users/sdran/Documents/repos/fpgademos/scalar_adder/scalar_add_pynqz2/scalar_add_pynqz2.cache/wt [current_project]
+  set_property webtalk.parent_dir C:/Users/sdran/Documents/repos/hwdesign/scalar_adder/scalar_add_pynqz2/scalar_add_pynqz2.cache/wt [current_project]
 set_property TOP design_1_wrapper [current_fileset]
 OPTRACE "read constraints: write_bitstream" START { }
 OPTRACE "read constraints: write_bitstream" END { }

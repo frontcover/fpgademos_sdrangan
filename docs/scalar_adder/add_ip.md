@@ -18,7 +18,7 @@ In the scalar adder case, this gets the directory  `./scalar_add_vitis/add/hls/i
 ## Adding the Vitis IP to Vivado
 
 
-* Go to **Tools->Settings->Project Settings->IP->Repository**.  Select the `+` sign in **IP Repositories**.  Navigate to the directory with the adder component.  In our case, this was at:  `fpgademos/scalar_adder/scalar_add_vitis/add/hls/impl/ip`.  
+* Go to **Tools->Settings->Project Settings->IP->Repository**.  Select the `+` sign in **IP Repositories**.  Navigate to the directory with the adder component.  In our case, this was at:  `hwdesign/scalar_adder/scalar_add_vitis/add/hls/impl/ip`.  
 * Select the `Add IP` button (`+`) again.  Add this IP.  Now the `Add` block should show up as an option.  If it doesn't it is possible that you synthesized for the wrong FPGA part number.  
 * You should see an Vitis IP block with ports `s_axi_control`, `interrupt` and some clocks.  Select the **run block automation**.  This will connect the IP to the processing system and may add some additional blocks for resetting the processor and interfacing the IP with the processor.  
 * In this simple example, we will not connect the `interrupt` signal.

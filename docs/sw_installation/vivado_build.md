@@ -19,10 +19,10 @@ In this note, we describe how to create a Vivado project that targets an MPSoC d
 in later demos.  To build a Vivado with an MPSOC:
 
 
-* Launch Vivado (see the [installation instructions](fpgademos/docs/installation.md#launching-vivado)):
+* Launch Vivado (see the [installation instructions](hwdesign/docs/installation.md#launching-vivado)):
 * Select the menu option `File->Project->New...`.  
    * For the project name, use `scalar_adder_vivado`.  
-   * In location, use the directory `fpgademos/scalar_adder`.  The Vivado project will then be stored in `scalar_adder/scalar_adder_vivado`.
+   * In location, use the directory `hwdesign/scalar_adder`.  The Vivado project will then be stored in `scalar_adder/scalar_adder_vivado`.
 * Select `RTL project`.  
    * Leave `Do not specify sources at this time` checked.
 * For `Default part`, select the `Boards` tab and then select:

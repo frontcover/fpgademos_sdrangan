@@ -47,7 +47,7 @@ proc checkRequiredFiles { origin_dir} {
   return $status
 }
 # Set the reference directory for source file relative paths (by default the value is script directory path)
-set origin_dir "/home/wirelesslab914/sundeep/fpgademos/scalar_adder/scalar_add_vivado/scripts"
+set origin_dir "/home/wirelesslab914/sundeep/hwdesign/scalar_adder/scalar_add_vivado/scripts"
 
 # Use origin directory path location variable, if specified in the tcl shell
 if { [info exists ::origin_dir_loc] } {

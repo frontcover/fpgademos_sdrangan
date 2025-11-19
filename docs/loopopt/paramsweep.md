@@ -13,13 +13,13 @@ Vitis HLS provides a rich systems for automating testing
 through *TCL* scripts.  As an example, the repository contains
 a TCL script 
 ~~~bash
-    fpgademos/vector_mult/vmult_vitis/scripts/sweep_unroll.tcl
+    hwdesign/vector_mult/vmult_vitis/scripts/sweep_unroll.tcl
 ~~~
 that provides commands to run the multiple C synthesis runs with different loop unrolling factors.
 
 The script can be run as follows:
 
-* In the terminal, navigate to the directory,  `cd fpgademos/vector_mult/vmult_vitis`
+* In the terminal, navigate to the directory,  `cd hwdesign/vector_mult/vmult_vitis`
 * Run the script with:
 ~~~bash
 vitis-run --mode hls --tcl scripts/sweep_unroll.tcl
@@ -42,6 +42,6 @@ Each directory has all the synthesis outputs for each unroll factor.
     ...
 ~~~
 Each of these files is an XML file with the synthesis results for the multiplcation loop.  
-* Go to the [jupyter notebook](https://github.com/sdrangan/fpgademos/blob/main/vector_mult/vmult_vitis/scripts/synth_analysis.ipynb) to analyze the results.
+* Go to the [jupyter notebook](https://github.com/sdrangan/hwdesign/blob/main/vector_mult/vmult_vitis/scripts/synth_analysis.ipynb) to analyze the results.
 
 

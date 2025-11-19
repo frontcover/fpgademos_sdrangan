@@ -13,7 +13,7 @@ We first create an Vivado project with the MPSOC:
 * Launch Vivado (see the [installation instructions]({{ site.baseurl }}/docs/common/installation.md#launching-vivado)):
 * Select the menu option `File->Project->New...`.  
    * For the project name, use `vmult_vivado`.  
-   * In location, use the directory `fpgademos/vec_mult`.  The Vivado project will then be stored in `fpgademos/vec_mult/vmult_vivado`.
+   * In location, use the directory `hwdesign/vec_mult`.  The Vivado project will then be stored in `hwdesign/vec_mult/vmult_vivado`.
 * Select `RTL project`.  
    * Leave `Do not specify sources at this time` checked.
 * For `Default part`, select the `Boards` tab and then select `Zynq UltraScale+ RFSoC 4x2 Development Board`.
@@ -34,7 +34,7 @@ We first create an Vivado project with the MPSOC:
    * Set the frequency to `PL0` or whichever clock is used to 300 MHz, or some frequency less than what you valdidated the Vitis IP for.
 
 ## Adding the Vitis IP to Vivado
-* Go to `Tools->Settings->Project Settings->IP->Repository`.  Select the `+` sign in `IP Repositories`.  Navigate to the directory with the adder component.  In our case, this was at:  `fpgademos/vector_mult/vmult_vitis/vmult_hls/vec_mult/hls/impl/ip`.  
+* Go to `Tools->Settings->Project Settings->IP->Repository`.  Select the `+` sign in `IP Repositories`.  Navigate to the directory with the adder component.  In our case, this was at:  `hwdesign/vector_mult/vmult_vitis/vmult_hls/vec_mult/hls/impl/ip`.  
 * Select the `Add IP` button (`+`) again.  Add this IP.  Now the `Vec_Mult` block should show up as an option.  If it doesn't it is possible that you synthesized for the wrong FPGA part number.  
 * You should see an Vitis IP block with ports `s_axi_control`, `interrupt`, `m_axi_gmem` and some clocks.  Select the `run block automation`.
 * Connect the `interrupt` on the Vitis IP to the `pl_ps_irq0` so that the PS can see the Vitis IP interrupt.
@@ -43,7 +43,7 @@ We first create an Vivado project with the MPSOC:
    *  This will connect the `m_axi_gmem` on the Vitis IP to the `S_AXI_HP0_FPD` which connects the master AXI on the IP to the DDR controller on the PS.  Importantly, it may add a `AXI Smart connect` between the port to deal with address translation.  Stupidly, Vivado lets you directly connect  `m_axi_gmem` to `S_AXI_HP0_FPD` even if they are mis-matched.
 
 ## Creating the FPGA Bitstream and PYNQ Overlay
-Follow the similar steps in [Scalar adder demo](/fpgademos/scalar_adder/fpga_build) to create the bitstream and the PYNQ overlay.  If you want to skip this step, the overlay files are in `fpgademos/vector_mult/overlay/`.
+Follow the similar steps in [Scalar adder demo](/hwdesign/scalar_adder/fpga_build) to create the bitstream and the PYNQ overlay.  If you want to skip this step, the overlay files are in `hwdesign/vector_mult/overlay/`.
 
 
 

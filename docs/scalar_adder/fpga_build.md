@@ -58,7 +58,7 @@ They are generally in two different directories.
 ## Creating the PYNQ files via a script
 Since this file collection is a pain, I created a script to this(actually, I got ChatGPT to write the script :) ) to perform this file collection.
 
-* Go to the project folder.  So, for the scalar adder project this is `/fpgademos/scaler_adder`
+* Go to the project folder.  So, for the scalar adder project this is `/hwdesign/scaler_adder`
 * In this directory simply run:
 ~~~bash
    bash ../common/collect_overlay_files.sh

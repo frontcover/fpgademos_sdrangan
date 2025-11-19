@@ -9,7 +9,7 @@ has_children: false
 
 * If Vitis is not already open from the previous step:
     * [Launch Vitis](../sw_installation/installation.md)
-    * Open the workspace for the for the Vitis IP that you were using, which should be in `fpgademos/scalar_adder/scalar_add_vitis`
+    * Open the workspace for the for the Vitis IP that you were using, which should be in `hwdesign/scalar_adder/scalar_add_vitis`
 * In the **Flow panel** (left sidebar), select **C/RTL Simulation->Run**
     * This command will execute a RTL-level simulation of the synthesized IP
 
@@ -21,7 +21,7 @@ although you can see it in the Vivado viewer.  So, we will modify the simulation
 an alternative open-source **VCD** or [**Value Change Dump**](https://en.wikipedia.org/wiki/Value_change_dump) format.  VCD files can be read by many programs including python.
 
 I wrote a simple python file that modifies the simulation files to capture the VCD output and re-runs the simulation.
-* `cd` to the directory of the Vitis IP project.  In the scalar adder project, this is in `fpgademos\scalar_adder\scalar_adder_vitis`
+* `cd` to the directory of the Vitis IP project.  In the scalar adder project, this is in `hwdesign\scalar_adder\scalar_adder_vitis`
 * Locate the directory for the component to run the simulation.  In this case, it is in the sub-directory: 
 ~~~bash
     scalar_adder_vitis\scalar_add\add
@@ -84,5 +84,5 @@ That is, we add a `cd /d` command to make the file callable from a different dir
 This will re-run the simulation and create a `dump.vcd` file of the simulation data.
 
 ## Viewing the Timing Diagram
-After you have created VCD file, you can see the timing diagram from the [jupyter notebook](https://github.com/sdrangan/fpgademos/tree/main/scalar_adder/notebooks/view_timing.ipynb).
+After you have created VCD file, you can see the timing diagram from the [jupyter notebook](https://github.com/sdrangan/hwdesign/tree/main/scalar_adder/notebooks/view_timing.ipynb).
 

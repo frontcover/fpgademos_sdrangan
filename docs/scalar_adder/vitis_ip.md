@@ -18,9 +18,9 @@ Then, get the FPGA part number for that processing system.
 ## Creating the Vitis HLS Project
 
 * [Launch Vitis](../sw_installation/installation.md)
-* Select **Open Workspace**.  Go to the directory `fpgademos\scalar_adder`.  This is where we will put the workspace.  `Vitis_HLS` will reopen.
+* Select **Open Workspace**.  Go to the directory `hwdesign\scalar_adder`.  This is where we will put the workspace.  `Vitis_HLS` will reopen.
 * Select **Create component->Create empty HLS component**.  You will walk through the following six steps:
-    * For **Name and location**, select component name as `scalar_add` and the location as `fpgademos\scalar_adder\scalar_add_vitis`
+    * For **Name and location**, select component name as `scalar_add` and the location as `hwdesign\scalar_adder\scalar_add_vitis`
     * Set the **Configuration file** select **Empty File** which is the default
     * In **Source Files**, select top function to `add`
     * In the **Hardware** tab, you will need to select the hardware you are targetting.  Select **Part** and search for the FGPA part number from above.

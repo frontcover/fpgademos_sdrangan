@@ -49,7 +49,7 @@ I would love to get your feedback -- positive or negative.  Feel free to email m
 
 ## Github pages
 
-Go to the [Github pages](https://sdrangan.github.io/fpgademos) for more.
+Go to the [Github pages](https://sdrangan.github.io/hwdesign) for more.
 
 
 
