@@ -75,3 +75,7 @@ build/
 # OS-specific
 .DS_Store
 Thumbs.db
+
+# Jupyter Notebook checkpoints
+**/.ipynb_checkpoints/
+**/.ipynb_checkpoints/* 

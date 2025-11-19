@@ -83,3 +83,6 @@ That is, we add a `cd /d` command to make the file callable from a different dir
 ~~~
 This will re-run the simulation and create a `dump.vcd` file of the simulation data.
 
+## Viewing the Timing Diagram
+After you have created VCD file, you can see the timing diagram from the [jupyter notebook](https://github.com/sdrangan/fpgademos/tree/main/scalar_adder/notebooks/view_timing.ipynb).
+
