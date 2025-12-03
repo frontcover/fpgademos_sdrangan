@@ -1,5 +1,5 @@
 ---
-title: Simulation and Synthesis 
+title: C Simulation and Synthesis 
 parent: Simple Scalar Accelerator
 nav_order: 2
 has_children: false
@@ -18,7 +18,7 @@ After we have written the HLS description of the IP, our first task it to simual
     * You will see a large number of outputs.  Within that stream of outputs, you will It should run with a result of 35 and show `Test passed!`. If you see this output, it has worked.
 * Later, we will design automated scripts to parse these outputs and compare results against test vectors.  But, this simple test is sufficient for our initial example.
 
-## Synthesis
+## C Synthesis
 
 Following simulation, we can **synthesize** our design, which means we convert the C/C++ functions into synthesizable RTL (Verilog/VHDL), targeting the specified FPGA part.
 

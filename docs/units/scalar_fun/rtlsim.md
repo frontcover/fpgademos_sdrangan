@@ -1,14 +1,14 @@
 ---
-title: Simulating the RTL
+title: RTL Simulation
 parent: Simple Scalar Accelerator
 nav_order: 3
 has_children: false
 ---
 
-# Simulating the Synthesized Vitis IP
+# RIL Simulation of the Synthesized Vitis IP
 
 Before adding the Vitis IP to the FPGA project, it is useful to simulate the synthesized RTL.
-This step can be done after C Synthesis, but before Packaging.
+This step can be done after C Synthesis and C simulation, but before Packaging.
 
 * If Vitis is not already open from the previous step:
     * [Launch Vitis](../../setup/sw_installation/)
@@ -21,12 +21,12 @@ This step can be done after C Synthesis, but before Packaging.
 
 ## Extracting VCD Files
 
-The C/RTL simulation that is run from the Vitis GUI creates a `.wdb` (waveform database) format file.
+The C/RTL simulation that is run from the Vitis GUI creates a `.wdb` (waveform database)  file with traces of all the signals.
 This format is an AMD proprietary format and cannot be read by other programs,
 although you can see it in the Vivado viewer.  So, we will modify the simulation to export 
 an alternative open-source **VCD** or [**Value Change Dump**](https://en.wikipedia.org/wiki/Value_change_dump) format.  VCD files can be read by many programs including python.
 
-I wrote a simple python file that modifies the simulation files to capture the VCD output and re-runs the simulation.  YOu can execute it as follows:
+The `xilinxutils` package has a simple python file that modifies the simulation files to capture the VCD output and re-runs the simulation.  You can execute it as follows:
 
 * `cd` to the directory of the Vitis IP project.  In the scalar function project, this Vitis project is in `hwdesign\scalar_fun\scalar_fun_vitis`
 * When the IP was synthesized, Vitis created a directory of the form `<component_name>/<top_name>` based on the names of the component and top-level function.  Based on the settings we used in this project, this directory is: 
@@ -37,7 +37,7 @@ I wrote a simple python file that modifies the simulation files to capture the V
 ~~~bash
     python xsim_vcd.py --top <top_name> [--comp <component_name>] [--out <vcd_file>]
 ~~~
-where `vcdfile` is the name of the VCD file with the signal traces.  By default, `<vcd_file>` is `dump.vcd`,
+where `vcdfile` is the name of the VCD file with the signal traces.  By default, `<vcd_file>` is `dump.vcd`.
 * We have not yet created a version of the script for Linux.
 * After running the script, there will be a VCD file with the simulation:
 ~~~bash

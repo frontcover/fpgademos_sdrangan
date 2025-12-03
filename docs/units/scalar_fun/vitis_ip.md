@@ -6,10 +6,21 @@ has_children: false
 ---
 
 # Creating the Vitis IP
-We first create a Vitis HLS project, design and build the Vitis IP for our scalar adder,
-and export the IP so that we can use it in Vivado.
+
+
+## High Level Synthesis (HLS)
+
+We first design our Vitis IP to be incorporated into the FPGA.
+We will design the IP with so‑called **High Level Synthesis (HLS)**, which means we describe the behavior of our design using a high‑level programming language such as C or C++, rather than writing out the detailed hardware connections ourselves. 
+
+The synthesis tool then automatically translates this description **Register Transfer Language (RTL)** like Verilog or VHDL.  The RTL describes the 
+the exact flow of signals between registers and logic gates.  Prior engineering
+desing flows (still used by most companies) is to directly code the RTL.  RTL gives very fine‑grained control but is vastly more time‑consuming and harder for beginners, while HLS allows us to think in terms of algorithms and let the tool handle the low‑level hardware details.
+
 
 ## Creating the Vitis HLS Project
+
+Following the instructions in the [software set-up](../../setup/sw_installation/vitis_build.md) for building a Vitis project:
 
 * [Launch Vitis](../../setup/sw_installation/)
 * Select **Open Workspace**.  Go to the directory `hwdesign\scalar_fun`.  This is where we will put the workspace.  `Vitis_HLS` will reopen.
@@ -34,7 +45,8 @@ and export the IP so that we can use it in Vivado.
         c = a * b;
         }
 ~~~
-So, the function just multiplies two numbers.  You can change this as you like.
+
+The function just multiplies two numbers.  You can change this as you like.
 This file is already in the git repo, so you do not need to write it.
    * Recall, that in the settings, we stated that `simp_fun` is the **top** function.  This function is referring to the function `simp_fun` in this file.  It will define the inputs and outputs that we will see in the processing system.
 * In the SCALAR_FUN_VITIS explorer pane (left sidebar), right click **Sources** and select **Add Source File** and open `scalar_fun.cpp`.   We have now added the file to our project.

@@ -19,7 +19,7 @@ By completing this demo, you will learn how to:
 
 ## Next Steps
 
-If you want to build the IP, add it to the Vivado project, and create the overlay, start from the begining with [building the IP in Vitis HLS](./vitis_ip.md).
+If you want to build the Vivado project from scratch, add the IP, and create the overlay, start from the begining with [adding the IP](./add_ip.md).
 
 Alternatively, the github repo already includes a pre-built overlay file.  So, you can just skip to [accessing the Vitis IP from PYNQ](./pynq.md).
 

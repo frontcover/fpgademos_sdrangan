@@ -17,7 +17,7 @@ The two key pieces of software we will use in this class.  Both are from AMD and
 In this class, we will integrate the Vitis IP into the larger Vivado FPGA project and deploy that onto the FPGA.
 
 Both Vitis and Vivado have free versions that are fine for this class.  But, to access them you will need to [create and AMD account](https://login.amd.com/).
----
+
 
 ## Selecting the version
 
@@ -26,7 +26,10 @@ You **cannot use the latest version** of Vivado/Vitis. You must install a versio
 * **RFSoC 4x2**:  Current version is 2024.1.  You can verify as follows.
    * Go to [Real Digital GitHub page](https://github.com/RealDigitalOrg/RFSoC4x2-BSP)
    * Look for files like `RFSoC4x2_2024_1.bsp` → this means you should install **Vivado/Vitis 2024.1**
-* **Pynq-Z2**:  Current version is 2025.1. 
+* **Pynq-Z2**:  Current version is 2025.1
+   * You can verify this setting in the [next step](./vivado_build.md) when you build the Vivado 
+   projet and attempt to select the board.  If the board is not an option, then you may have to 
+   go to an earlier version. 
 
 ---
 
