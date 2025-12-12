@@ -49,7 +49,7 @@ int main() {
         exp_res.trans_id = test_cases[i].trans_id;
         exp_res.c = test_cases[i].a * test_cases[i].b;
         exp_res.d = test_cases[i].a + test_cases[i].b;
-        exp_res.err_code = 0; // No error expected
+        exp_res.err_code = Resp::NO_ERR; // No error expected
         
         // Check result
         std::cout << "Test " << i  << ":"; 

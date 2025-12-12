@@ -26,7 +26,7 @@ void simp_fun(
             // Report error
             Resp res;
             res.trans_id = cmd.trans_id;
-            res.err_code = Cmd::SYNC_ERR;  // TLAST mismatch
+            res.err_code = Resp::SYNC_ERR;  // TLAST mismatch
 
             // Drain until TLAST to resync
             while (!cmd_stream.empty()) {
@@ -49,7 +49,7 @@ void simp_fun(
         res.trans_id = cmd.trans_id;
         res.c = cmd.a * cmd.b;
         res.d = cmd.a + cmd.b;
-        res.err_code = Cmd::NO_ERROR; // No error
+        res.err_code = Resp::NO_ERR; // No error
 
         // Write result to output FIFO
         res.stream_write<stream_t>(result_stream, true); // Assert TLAST on final word
