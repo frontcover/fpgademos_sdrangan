@@ -32,7 +32,7 @@ void vec_mult(data_t *a, data_t *b, data_t *c, int n) {
     // Load into local buffers
     // We need an II=2 since there are two arrays to read into
     input_loop:  for (int i = 0; i < n; i++) {
-#pragma HLS pipeline II=2
+#pragma HLS pipeline 
         a_buf[i] = a[i];
         b_buf[i] = b[i];
     } 
@@ -42,7 +42,7 @@ void vec_mult(data_t *a, data_t *b, data_t *c, int n) {
 #if UNROLL_FACTOR > 1
 #pragma HLS unroll factor=UNROLL_FACTOR
 #elif PIPELINE_EN
-#pragma HLS pipeline II=1
+#pragma HLS pipeline 
 #else
 #pragma HLS pipeline off 
 #endif
@@ -52,7 +52,7 @@ void vec_mult(data_t *a, data_t *b, data_t *c, int n) {
 
     // Store results back to global memory
     output_loop:  for (int i = 0; i < n; i++) {
-#pragma HLS pipeline II=1
+#pragma HLS pipeline 
         c[i] = c_buf[i];
     }
 }

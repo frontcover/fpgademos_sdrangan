@@ -39,7 +39,7 @@ class SigInfo(object):
         self.two_level = False
         self.vcd_fmt = 'str' # 'str' or 'binary'
         self.numeric_type = 'str' # 'str', 'int', 'float', 'hex'
-        self.numeric_fmt_str = '%d'  
+        self.numeric_fmt_str = '%X'  
         self.is_clock = False
         self.time_scale = time_scale
 
@@ -52,6 +52,7 @@ class SigInfo(object):
             self.times[i] = t / self.time_scale  # Scale time
         self.short_name = name.split('.')[-1]
         self.disp_values = None
+        self.numeric_values = None
 
         self.set_format()
 
@@ -85,21 +86,26 @@ class SigInfo(object):
             if 'clock' in name_lower or 'clk' in name_lower:
                 self.is_clock = True
 
-    def get_display_values(self):
+    def get_values(self):
         """
-        Converts the signal values to display format based on the detected format.   
+        Converts the signal numeric and display values based on the format.   
 
         Right now, `float` is not implemented.
         """
         self.disp_values = []
+        self.numeric_values = []
         for v in self.values:
             d = str(v)  # Default is to  display original value
+            num_value = 0
             if not (v in {'x', 'X', 'z', 'Z'}):
                 if self.vcd_fmt == 'binary':
-                    if self.numeric_type == 'int':
-                        int_value = int(v, 2)
-                        d = self.numeric_fmt_str % int_value
+                    num_value = int(v, 2)
+                    d = self.numeric_fmt_str % num_value                    
+            self.numeric_values.append(num_value)
             self.disp_values.append(d)
+        self.numeric_values = np.array(self.numeric_values).astype(np.uint32)
+
+    
 
 
 class VcdViewer(object):
@@ -151,7 +157,34 @@ class VcdViewer(object):
                 self.add_signal(s)
                 self.sig_info[s].short_name = short_name
        
-    
+    def add_clock_signal(
+            self, 
+            name : str | None = None) -> str:
+        """
+        Adds a clock signal to sig_info and marks it as a clock.
+        Parameters
+        ----------
+        name : str
+            Name that must be contained in the signal along with 'clock' or 'clk' to be added.
+
+        Returns
+        -------
+        full_name : str
+            Full name of the clock signal added.
+        """
+        for s in self.vcd.signals:
+            name_lower = s.lower()
+            if (('clock' in name_lower) or ('clk' in name_lower)) and (name is None or name in s):
+                name = s
+                break
+        if name is None:
+            raise ValueError("No clock signal found in VCD.")
+        self.add_signal(name)
+        self.sig_info[name].is_clock = True
+        self.sig_info[name].short_name =  'clk'
+
+        return name
+
     def add_status_signals(
             self, 
             prefix : str ='AESL_'):
@@ -174,6 +207,64 @@ class VcdViewer(object):
                     self.add_signal(s)
                     self.sig_info[s].short_name = suf
 
+    def add_axiss_signals(
+            self,
+            name : str | None = None,
+            short_name_prefix : str | None = None) -> dict[str, str]:
+        """
+        Adds signals that are part of an AXI4-Stream interface.
+
+        Parameters
+        ----------
+        name : str | None
+            If provided, only signals containing this substring are considered.
+        short_name_prefix : str | None
+            If provided, this prefix is added to the short names of the signals.
+
+        Returns
+        -------
+        axi_sigs : dict[str, str]
+            Dictionary mapping AXI4-Stream keywords to signal names.
+        bitwidth : int
+            Bitwidth of the TDATA signal.
+        """
+        axi4s_keywords = ['tdata', 'tvalid', 'tready', 'tlast']
+        axi_sigs = dict()
+        for kw in axi4s_keywords:
+            axi_sigs[kw] = None
+            for s in self.vcd.signals:
+                if kw in s.lower() and (name is None or name in s):
+                    if axi_sigs[kw] is not None:
+                        raise ValueError(f"Multiple signals found for AXI4-Stream keyword '{kw}'.")
+                    axi_sigs[kw] = s
+                    self.add_signal(s)
+                    if short_name_prefix:
+                        short_name = f"{short_name_prefix}_{kw.upper()}"
+                    elif name:
+                        short_name = f"{name}_{kw.upper()}"
+                    else:  
+                        short_name = kw.upper()
+                    self.sig_info[s].short_name = short_name
+            if axi_sigs[kw] is None:
+                raise ValueError(f"No signal found for AXI4-Stream keyword '{kw}'.")
+            
+        # Get the bitwidth from the TDATA signal.
+        # The signal ends in [N:0], so the width is N+1
+        tdata_sig = axi_sigs['tdata']
+        tdata_parts = tdata_sig.split('[')
+        bitwidth = None
+        if len(tdata_parts) > 1:
+            bit_range = tdata_parts[-1].strip(']')
+            msb_lsb = bit_range.split(':')
+            if len(msb_lsb) == 2:
+                msb = int(msb_lsb[0])
+                bitwidth = msb + 1       
+
+        if bitwidth is None:
+            raise ValueError(f"Could not determine bitwidth from TDATA signal '{tdata_sig}'.")   
+                  
+        return axi_sigs, bitwidth
+
    
     def full_name(
             self, 
@@ -194,6 +285,15 @@ class VcdViewer(object):
                 return s
         return None
     
+    def get_values(
+            self):
+        """
+        Converts the signal values for all added signals.
+        """
+        for s, si in self.sig_info.items():
+            si.get_values()
+
+    
     
     def plot_signals(
             self,
@@ -204,7 +304,9 @@ class VcdViewer(object):
             row_height = 0.5,
             row_step = 0.8,
             left_border = None,
-            right_border = None):
+            right_border = None,
+            trange = None,
+            text_scale_factor = 1000):
         """
         Plots the timing diagram for the selected signals.
 
@@ -226,6 +328,11 @@ class VcdViewer(object):
             Left border space in time units. If None, set to 10% of time range.
         right_border : float, optional
             Right border space in time units. If None, set to 5% of time range.
+        trange : tuple(float, float), optional
+            Time range (tmin, tmax) to plot. If None, uses full range of signals.
+        text_scale_factor : float, optional
+            Scale factor to determine if there is enough space to draw text labels.
+
         Returns 
         -------
         None         
@@ -261,15 +368,18 @@ class VcdViewer(object):
             ax_provided = True
 
 
-        # Get min and max times
-        for i, s in enumerate(signals_to_plot):
-            si = self.sig_info[s]
-            if i == 0:
-                tmin = si.times[0]
-                tmax = si.times[-1]
-            else:
-                tmin = min(tmin, si.times[0])
-                tmax = max(tmax, si.times[-1])   
+        # Get min and max times.  If not provided, compute from signals
+        if trange is not None:
+            tmin, tmax = trange
+        else:
+            for i, s in enumerate(signals_to_plot):
+                si = self.sig_info[s]
+                if i == 0:
+                    tmin = si.times[0]
+                    tmax = si.times[-1]
+                else:
+                    tmin = min(tmin, si.times[0])
+                    tmax = max(tmax, si.times[-1])   
 
         # Compute the borders if not provided as a fration of total time range
         # Default is left border = 15% of time range, right border = 5% of time range
@@ -280,6 +390,10 @@ class VcdViewer(object):
         if right_border is None:
             right_border = 0.05 * time_range
 
+        # Save the top and bottom y positions for each signal
+        self.ytop = dict()
+        self.ybot = dict()
+
         for i, s in enumerate(signals_to_plot):
             y =  ymax - (i + 0.5) * row_step  # vertical position for signal s
             si = self.sig_info[s]
@@ -287,25 +401,41 @@ class VcdViewer(object):
             sn = si.short_name
 
             # Get the display values
-            si.get_display_values()
+            si.get_values()
             v_list = si.disp_values
             
             # Draw signal name
             ax.text(tmin - 0.5, y, sn, ha='right', va='center', fontsize=10)
 
+            # Set the top and bottom y positions for the signal
+            ybot = y - 0.4 * row_step
+            ytop = y + 0.4 * row_step
+            self.ytop[sn] = ytop
+            self.ybot[sn] = ybot
+
+
             # Draw horizontal segments between value changes
+            vlast = None
             for j in range(len(t_list)):
                 t_start = t_list[j]
                 if j + 1 < len(t_list):
                     t_end = t_list[j + 1]
                 else:
                     t_end = tmax  # Extend to the right edge
+
+                # Skip if outside time range
+                if t_end < tmin or t_start > tmax:
+                    continue
+                t_start = max(tmin, t_start)
+                t_end = min(tmax, t_end)
+
                 v = v_list[j]
 
                 draw_top = True
                 draw_bot = True
                 draw_text = True
                 fill_gray = False
+                draw_vert = True
                 if (v in {'x', 'X', 'z', 'Z'}):
                     draw_text = False
                     fill_gray = True
@@ -316,11 +446,14 @@ class VcdViewer(object):
                     elif v == '0':
                         draw_top = False
                         draw_text = False
+                    if vlast is not None:
+                        if v == vlast:
+                            draw_vert = False
+                vlast = v
     
-                # Draw a vertical line at the start of the segment
-                ybot = y - 0.4 * row_step
-                ytop = y + 0.4 * row_step
-                ax.vlines(t_start, ybot, ytop, color='black', linewidth=1)
+                # Draw a vertical line at the start of the segment                
+                if draw_vert:
+                    ax.vlines(t_start, ybot, ytop, color='black', linewidth=1)
                 if draw_bot:
                     ax.hlines(ybot, t_start, t_end, color='black', linewidth=1)
                 if draw_top:
@@ -331,6 +464,13 @@ class VcdViewer(object):
                     ax.fill_betweenx([ybot, ytop], t_start, t_end, color='lightgray')
 
                 # Place text label in the middle of the segment
+                # Check if there is enough space to draw the text
+                if draw_text:
+                    idx_start = ax.transData.transform((t_start, y))
+                    idx_end = ax.transData.transform((t_end, y))
+
+                    if idx_end[0] - idx_start[0] < len(v)*text_scale_factor:
+                        draw_text = False
                 if draw_text:
                     ax.text((t_start + t_end) / 2, y, v, ha='center', va='center',
                             fontsize=10, color='black')
@@ -357,3 +497,141 @@ class VcdViewer(object):
 
 
         return ax
+    
+    
+    def extract_axis_bursts(
+            self,
+            clk_name : str,
+            axis_sigs : dict[str, str]) -> list[dict]:
+        """
+        Extract bursts from AXI4-Stream signals.
+        
+        Parameters
+        ----------
+        clk_name: str
+            Name of the clock signal.
+        axis_sigs : dict[str, str]
+            Dictionary of AXI4-Stream signal names with keys:
+            'tdata', 'tvalid', 'tready', 'tlast'
+
+        Returns
+        -------
+        bursts : list of dict
+            Each dict has:
+            - 'data': list of tdata values in the burst
+            - 'start_idx': index of first beat in burst
+            - 'beat_type':  list of status of each beat.
+            beat_type[i] can be 0 (transfer, tvalid=tready=1), 1 (idle (tvalid=0)), 2 (stall (tready=0))
+            - 'tstart': time of first beat in burst
+        clk_period : float
+            Estimated clock period in ns.
+            Hence the time for beat i is tstart + i * clk_period
+        """
+        bursts = []
+        current_burst = None
+
+        # Extract clock times and resample AXI-Stream signals
+        clk_sig = self.sig_info[clk_name]
+        clk_times = extract_clock_times(clk_sig)
+        tdata = resample_signal(self.sig_info[axis_sigs['tdata']], clk_times)
+        tvalid = resample_signal(self.sig_info[axis_sigs['tvalid']], clk_times)
+        tready = resample_signal(self.sig_info[axis_sigs['tready']], clk_times)
+        tlast = resample_signal(self.sig_info[axis_sigs['tlast']]  , clk_times)
+
+        for i in range(len(tdata)):
+            # Handshake occurs only when both valid and ready are high
+            if tvalid[i] and tready[i]:
+                if current_burst is None:
+                    # Start a new burst
+                    current_burst = {
+                        'data': [],
+                        'start_idx': i,
+                        'beat_type': [],
+                        'tstart': clk_times[i]
+
+                    }
+                # Append this beat
+                current_burst['data'].append(tdata[i])
+                current_burst['beat_type'].append(0)  # transfer
+
+                if tlast[i]:
+                    # End of burst
+                    bursts.append(current_burst)
+                    current_burst = None
+            else:
+                if current_burst is not None:
+                    if not tvalid[i]:
+                        current_burst['beat_type'].append(1)  # idle
+                    elif not tready[i]:
+                        current_burst['beat_type'].append(2)  # stall
+                # Stall or idle → skip
+                continue
+
+        # Estimate clock period
+        clk_diffs = np.diff(clk_times)
+        clk_period = np.median(clk_diffs)
+
+        return bursts, clk_period
+
+
+def extract_clock_times(
+        sig_info : SigInfo) -> list[float]:
+    """
+    Extracts the clock edge times from a VCD object for a given clock signal.
+
+    Parameters
+    ----------
+    vcd : VCDVCD
+        Parsed VCD object.
+    clk_name : str
+        Name of the clock signal.
+
+    Returns
+    -------
+    clk_times : list of float
+        List of times (in ns) when the clock signal transitions to '1'.
+    """
+    
+    clk_times = []
+    for t, v in zip(sig_info.times, sig_info.values):
+        if v == '1':
+            clk_times.append(t)  # Convert to ns
+
+    clk_times = np.array(clk_times)
+
+    return clk_times
+
+def resample_signal(
+        sig_info : SigInfo,
+        clk_times : np.ndarray) -> np.ndarray:
+    """
+    Resamples a signal to new time points using nearest-neighbor interpolation.
+
+    Parameters
+    ----------
+    sig_info : SigInfo
+        Signal information object.
+    new_times : np.ndarray
+        Array of new time points to sample the signal at.  Typically these are clock edge times.
+
+    Returns
+    -------
+    resampled_values : np.ndarray
+        Array of signal values at the new time points.
+    """    
+    sig_times = sig_info.times
+    sig_values = sig_info.numeric_values
+    sampled = np.empty_like(clk_times, dtype=sig_values.dtype)
+
+    j = 0  # pointer into sig_times and sig_values
+    current_val = sig_values[0]
+
+    for i, t_clk in enumerate(clk_times):
+        # advance signal pointer while events are before or at this clock
+        while j < len(sig_times) and sig_times[j] <= t_clk:
+            current_val = sig_values[j]
+            j += 1
+        sampled[i] = current_val
+
+    return sampled
+

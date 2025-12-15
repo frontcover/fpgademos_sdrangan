@@ -5,10 +5,10 @@
 // We check if the parameters are defined by the TCL script.
 // If not, we set them to default values.
 #ifndef PIPELINE_EN  
-#define PIPELINE_EN 0  // Enables pipelining
+#define PIPELINE_EN 1  // Enables pipelining
 #endif
 #ifndef UNROLL_FACTOR  
-#define UNROLL_FACTOR 4  // Unrolls loops when > 1
+#define UNROLL_FACTOR 1  // Unrolls loops when > 1
 #endif
 #ifndef MAX_SIZE  
 #define MAX_SIZE 1024  // Array size to test
