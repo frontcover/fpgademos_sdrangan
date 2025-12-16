@@ -57,31 +57,31 @@ Often designers hand write the packing and unpacking routines for the individual
 This is too cumbersome.  So, I have created a way that you can automatically generate 
 the code.
 
-In `fifo_fun_vitis\datastructs.py`, there is a Python description of the command data structure.  Then, a class `DataStructGen` is called to auto-generate the `cmd.h` file.
-Similar code is available for `resp.h`.  
-This auto-generation will save a lot of time and reduce errors.  
-
+In `fifo_fun_vitis\python\datastructs.py`, there is a Python description of the command data structure.  For example, the command structure is described by a list of fields:
 ~~~python
 # Command structure
-fields = [
+cmd_fields = [
     FieldInfo("trans_id", IntType(16), descr="Transaction ID"),
     FieldInfo("a", IntType(32), descr="Operand A"),
     FieldInfo("b", IntType(32), descr="Operand B")]
-cmd_struct = DataStructGen("Cmd", fields)
-cmd_struct.stream_bus_widths = stream_bus_widths
-cmd_struct.gen_include(include_file="cmd.h")
 ~~~
-You can then synthesize the include files `cmd.h` and `result.h` by:
+The response structure has a similar description.  
+We can then auto-generate the Vitis include files, `cmd.h` and `result.h`
+from these descriptions:
+
 * Activate the virtual environment with `xilinxutils`.  See the [instructions](../../support/repo/repo.md)
-* Navigate to the directory with the source code: 
+* Navigate to the directory with the command and response field descriptions: 
 ~~~bash
-    hwdesign/fifoif/fifo_fun_vitis/src
+    hwdesign/fifoif/fifo_fun_vitis/python
 ~~~
 * Run the command:
 ~~~bash
-    python datastructs.py
+    python gen_vitis_code.py
 ~~~
-This program will create `cmd.h` and `result.h`.
+This program will create `cmd.h` and `result.h` in the directory:
+~~~bash
+    wdesign/fifoif/fifo_fun_vitis/src
+~~~
 
 
 ---

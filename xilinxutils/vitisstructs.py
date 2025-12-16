@@ -1,3 +1,11 @@
+# xilinxutils/vitisstructs.py:  Data structure code generation for Vitis HLS
+
+import numpy as np
+import fixedpoint
+from enum import Enum
+from typing import Type
+
+
 class BaseType:
     """
     Abstract base for all types.
@@ -82,11 +90,34 @@ class BaseType:
             C++ code snippet.  If None or empty, no preamble is added.
         """
         return None
+    
+    def init_python_value(self):
+        """
+        Returns an initial value for a python field of this type.
+
+        Returns
+        -------
+        any
+            Initial value for a python field of this type.
+        """
+        return 0
+    def write_uint(self, value) -> np.uint32:
+        """
+        Write value as an unsigned integer of this type.
+        """
+        raise NotImplementedError
+    def read_uint(self, uint_value) -> np.uint32:
+        """
+        Read value from an unsigned integer of this type.
+        """
+        raise NotImplementedError
 
     
 class IntType(BaseType):
     """
-    Arbitrary precision integer type (ap_int/ap_uint).
+    This class is realized as arbitrary precision integer 
+    type (ap_int/ap_uint) in Vitis and either np.int32/np.uint32
+    or fixedpoint.FixedPoint in Python.
 
     Parameters
     ----------
@@ -94,13 +125,23 @@ class IntType(BaseType):
         Bitwidth of the integer.
     signed : bool, optional
         Whether the integer is signed (default True).
+    use_np : bool, optional
+        Use nunmpy integer types for widths <= 32 (default True).
+        Otherwise, use fixedpoint.FixedPoint for all widths.
     """
 
-    def __init__(self, width: int, signed: bool = True):
+    def __init__(
+            self, 
+            width: int, 
+            signed: bool = True,
+            use_np: bool = True):
         super().__init__(width)
         if width <= 0:
             raise ValueError("Width must be positive")
         self.signed = signed
+        self.use_np = use_np
+        if use_np and width > 32:
+            raise ValueError("Numpy integer types only supported for widths <= 32")
 
     def cpp_repr(self) -> str:
         """
@@ -152,6 +193,54 @@ class IntType(BaseType):
             # Slice assignment
             high = ind0 + self.width - 1
             return f"{word_name}.range({high}, {ind0}) = {var_name};"
+        
+    def init_python_value(self):
+        """
+        Returns an initial value for a python field of this type.
+
+        Returns
+        -------
+        np.int32 | np.uint32
+            Initial value for a python field of this type.
+        """
+        if self.use_np:
+            if self.signed:
+                val = np.int32(0)
+            else:
+                val = np.uint32(0)
+        else:
+            val = fixedpoint.FixedPoint(0, signed=self.signed, m=self.width, n=0)
+        return val
+    
+    def write_uint(self, val) -> np.uint32:
+        """
+        Write value as an unsigned integer of this type.
+        """
+        if self.use_np:
+            mask = (1 << self.width) - 1
+            return val & mask
+        else:
+            if not isinstance(val, fixedpoint.FixedPoint):
+                raise ValueError("Value must be a fixedpoint.FixedPoint")
+            return np.uint32(val.bits[ self.width -1 : 0 ])
+        
+    def read_uint(self, uint_val):
+        """
+        Reads value from unsigned integer
+        """
+        if self.use_np:
+            mask = (1 << self.width) - 1
+            uint_val = uint_val & mask
+            if self.signed:
+                # Check if sign bit is set
+                if uint_val & (1 << (self.width - 1)):
+                    # Convert from unsigned to signed (two's complement)
+                    uint_val = int(uint_val) - (1 << self.width)
+                return np.int32(uint_val)
+            else:
+                return np.uint32(uint_val)
+        else:
+            return fixedpoint.FixedPoint(uint_val, signed=self.signed, m=self.width, n=0)
         
 class FloatType(BaseType):
     """
@@ -226,6 +315,54 @@ class FloatType(BaseType):
             f"        conv.f = {var_name};\n"
             f"        {word_name}.range({high}, {ind0}) = conv.u;"
         )
+    
+    def init_python_value(self):
+        """
+        Returns an initial value for a python field of this type.
+
+        Returns
+        -------
+        np.float32
+            Initial value for a python field of this type.
+        """
+        return np.float32(0.0)
+    
+    def write_uint(self, val) -> np.uint32:
+        """
+        Write float value as an unsigned integer (bit representation).
+        
+        Parameters
+        ----------
+        val : float or np.float32
+            Float value to convert to bit representation.
+            
+        Returns
+        -------
+        np.uint32
+            Unsigned integer representation of the float's bit pattern.
+        """
+        # Convert to np.float32 to ensure it's 32-bit
+        f32 = np.float32(val)
+        # Use view to get the bit pattern as uint32
+        return f32.view(np.uint32)
+    
+    def read_uint(self, uint_val) -> np.float32:
+        """
+        Read float value from unsigned integer (bit representation).
+        
+        Parameters
+        ----------
+        uint_val : int or np.uint32
+            Unsigned integer containing the float's bit pattern.
+            
+        Returns
+        -------
+        np.float32
+            Float value reconstructed from bit pattern.
+        """
+        # Convert to uint32 and use view to interpret as float32
+        u32 = np.uint32(uint_val)
+        return u32.view(np.float32)
 
 
 class EnumType(BaseType):
@@ -236,31 +373,21 @@ class EnumType(BaseType):
     ----------
     name : str
         Name of the enum type.
-    entries : list
-        List of enum entries. Each entry can be a string (auto-assigned value)
-        or a tuple (name, value).
+    enum_type : Type[Enum]
+        Enum class type.
     width : int, optional
         Bitwidth of the enum type. If None, calculated from number of entries.
     """
     def __init__(self, 
                  name: str, 
-                 entries: list, 
+                 enum_type : Type[Enum], 
                  width: int = None):
         self.name = name
-        self.entries = []
-        next_val = 0
-        for e in entries:
-            if isinstance(e, str):
-                self.entries.append((e, next_val))
-                next_val += 1
-            elif isinstance(e, tuple):
-                self.entries.append(e)
-                next_val = e[1] + 1
-            else:
-                raise ValueError("Enum entries must be str or (str, int)")
+        self.enum_type = enum_type
+        self.entries = [(e.name, e.value) for e in enum_type]
         if width is None:
             import math
-            width = max(1, math.ceil(math.log2(next_val)))
+            width = max(1, math.ceil(math.log2(len(self.entries))))
         super().__init__(width)
     
     def cpp_repr(self) -> str:
@@ -325,7 +452,58 @@ class EnumType(BaseType):
         enumerators = ",\n        ".join(f"{name} = {val}" for name, val in self.entries)
         return f"enum {self.name} : unsigned int {{\n        {enumerators}\n    }};"  
 
+    def init_python_value(self):
+        """
+        Returns an initial value for a python field of this type.
 
+        Returns
+        -------
+        Enum
+            Initial value for a python field of this type (first enum value).
+        """
+        # Return the first enum value (lowest value)
+        return min(self.enum_type, key=lambda e: e.value)
+    
+    def write_uint(self, val) -> np.uint32:
+        """
+        Write enum value as an unsigned integer.
+        
+        Parameters
+        ----------
+        val : Enum or int
+            Enum value to convert. Can be an Enum instance or int value.
+            
+        Returns
+        -------
+        np.uint32
+            Unsigned integer representation of the enum value.
+        """
+        if isinstance(val, self.enum_type):
+            uint_val = val.value
+        else:
+            uint_val = int(val)
+        
+        mask = (1 << self.width) - 1
+        return np.uint32(uint_val & mask)
+    
+    def read_uint(self, uint_val):
+        """
+        Read enum value from unsigned integer.
+        
+        Parameters
+        ----------
+        uint_val : int or np.uint32
+            Unsigned integer containing the enum value.
+            
+        Returns
+        -------
+        Enum
+            Enum instance corresponding to the value.
+        """
+        mask = (1 << self.width) - 1
+        val = int(uint_val) & mask
+        return self.enum_type(val)
+    
 class FieldInfo:
     def __init__(
             self, 
@@ -357,34 +535,146 @@ class FieldInfo:
             return f"    {self.dtype.cpp_repr()} {self.name}; // {self.descr}"
         else:
             return f"    {self.dtype.cpp_repr()} {self.name};"
+
+class VitisStruct(object):
+    def __init__(
+            self,
+            name: str,
+            fields: list[FieldInfo] | None = None):
+        self.name = name
+        self.fields = fields if fields is not None else []
+
+        # Create dictionary of values
+        self.data = {}
+        for f in self.fields:
+            self.data[f.name] = f.dtype.init_python_value()
+
+    def write_stream(self, bus_width: int = 32):
+        """
+        Generate a vector of unint<32> words representing this struct. 
+
+        Parameters
+        ----------
+        bus_width : int
+            Bus width.  Must be multiple of 32.
+
+        Returns
+        -------
+        nd.array of (nwords, nbus_words) np.uint32
+            An array of words representing this struct.
+        """
+        
+        if bus_width % 32 != 0:
+            raise ValueError("Bus width must be a multiple of 32")
+        nbus_words = bus_width // 32
+
+
+        # Create output array
+        out_words = []
+
+        ind0 = 0       # current bit index within the word
+        word_count = 0 # count of words written
+        bus_words = np.zeros((nbus_words,), dtype=np.uint32)
+        
+        for f in self.fields:
+            bw = f.dtype.width
+            val = self.data[f.name]
+
+            # If field doesn't fit in current word, write current word and start a new one
+            if ind0 + bw > bus_width:
+                # Write current word to output array
+                out_words.append(bus_words.copy())
+                word_count += 1
+                bus_words = np.zeros((nbus_words,), dtype=np.uint32)
+                ind0 = 0
+
+            # Write field bits into bus_words
+            word = f.dtype.write_uint(val)
+            j = ind0 // 32 # word index within bus_words
+            k = ind0 % 32  # bit index within bus_words[j]
+            bus_words[j] |= (word << k) & 0xFFFFFFFF
+            word = word >> (32 - k)
+            if k + bw > 32:
+                # Spill over into next word
+                bus_words[j + 1] |= word & 0xFFFFFFFF
+                        
+            # Advance bit index
+            ind0 += bw
+
+        # Write final word if needed
+        if ind0 > 0:
+            out_words.append(bus_words.copy())
+
+        out_words = np.array(out_words, dtype=np.uint32)
+        return out_words
+
+    def read_stream(self, 
+                    in_words: np.ndarray,
+                    bus_width: int = 32):
+        """
+        Read struct data from a vector of uint32 words.
+
+        Parameters
+        ----------
+        in_words : nd.array of (nwords, nbus_words) np.uint32
+            An array of words representing this struct.
+        bus_width : int
+            Bus width.  Must be multiple of 32.
+        """
+        
+        if bus_width % 32 != 0:
+            raise ValueError("Bus width must be a multiple of 32")
+        nbus_words = bus_width // 32
+
+        ind0 = 0       # current bit index within the word
+        word_count = 0 # count of words read
+
+        for f in self.fields:
+            bw = f.dtype.width
+
+            # If field doesn't fit in current word, read a new one
+            if ind0 + bw > bus_width:
+                word_count += 1
+                ind0 = 0
+
+            # Read field bits from in_words
+            j = ind0 // 32 # word index within bus_words
+            k = ind0 % 32  # bit index within bus_words[j]
+            word = in_words[word_count, j]
+            field_bits = (word >> k) & ((1 << min(bw, 32 - k)) - 1)
+            if k + bw > 32:
+                # Spill over into next word
+                word2 = in_words[word_count, j + 1]
+                field_bits |= (word2 & ((1 << (bw - (32 - k))) - 1)) << (32 - k)
+            
+            # Convert bits to field value
+            val = f.dtype.read_uint(field_bits)
+            self.data[f.name] = val
+            
+            # Advance bit index
+            ind0 += bw
     
-class DataStructGen(object):
+class VitisCodeGen(object):
     """
-    Class for generating C++ struct declarations and serialization methods.
+    Class for generating Vitis C++ code for the VitisStruct.
 
     Parameters
     ----------
-    name: str
-        Name of the data structure.
-    fields: List[FieldInfo]
-        List of fields in the data structure.
+    vs :  VitisStruct
+        VitisStruct instance to generate code for.
     """
     def __init__(self, 
-                 name: str,
-                 fields: list[FieldInfo] | None = None):
-        self.name = name
-        self.fields = fields if fields is not None else []
+                 vs : VitisStruct):
+        self.name = vs.name
+        self.fields = vs.fields
         self.stream_bus_widths = []
 
-    def add_field(self, field: FieldInfo):
-        self.fields.append(field)
-
-    def cpp_decl(self) -> str:
-        decl_lines = [f"struct {self.name} {{"]
-        for field in self.fields:
-            decl_lines.append(field.cpp_decl())
-        decl_lines.append("};")
-        return "\n".join(decl_lines)
+    #def cpp_decl(self) -> str:
+    #    decl_lines = [f"struct {self.name} {{"]
+    #    for field in self.fields:
+    #        decl_lines.append(field.cpp_decl())
+    #    decl_lines.append("};")
+    #    return "\n".join(decl_lines)
     
     def gen_include(
         self,

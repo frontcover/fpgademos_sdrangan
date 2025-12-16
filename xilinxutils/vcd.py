@@ -465,6 +465,8 @@ class VcdViewer(object):
 
                 # Place text label in the middle of the segment
                 # Check if there is enough space to draw the text
+                if text_scale_factor <= 0:
+                    draw_text = False
                 if draw_text:
                     idx_start = ax.transData.transform((t_start, y))
                     idx_end = ax.transData.transform((t_end, y))
@@ -556,6 +558,7 @@ class VcdViewer(object):
 
                 if tlast[i]:
                     # End of burst
+                    current_burst['data'] = np.array(current_burst['data']).astype(np.uint32)
                     bursts.append(current_burst)
                     current_burst = None
             else:
